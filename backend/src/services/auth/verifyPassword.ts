@@ -1,3 +1,4 @@
+import HttpError from "@/HttpError.ts";
 import bcrypt from "bcryptjs";
 
 export default async function verifyPassword(
@@ -6,6 +7,6 @@ export default async function verifyPassword(
 ): Promise<void> {
   const isValid = await bcrypt.compare(plainTextPassword, hashedPassword);
   if (!isValid) {
-    throw new Error("Invalid credentials."); // 直接拋出錯誤
+    throw new HttpError("密碼錯誤", 401);
   }
 }

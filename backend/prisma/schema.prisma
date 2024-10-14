@@ -8,9 +8,17 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String
-  email     String   @unique
-  password  String
+  id       Int    @id @default(autoincrement())
+  username String
+  email    String @unique
+  password String
+
+  isEmailVerified   Boolean @default(false) // 信箱驗證狀態
+  verificationToken String? // 信箱驗證 token
+
+  resetPasswordToken        String? // 密碼重設 token
+  resetPasswordTokenExpires DateTime? // 儲存 密碼重設 token 過期時間
+
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

@@ -1,14 +1,13 @@
 "use client";
 
-import axios from "@/services/axios";
 import { FormEventHandler } from "react";
 
 const DashboardPage = () => {
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
-    const response = await axios.get("/api/auth/user");
-    if (response) console.log(response);
+    // const response = await axios.get("/api/auth/user");
+    // if (response) console.log(response);
   };
 
   return (

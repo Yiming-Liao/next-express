@@ -1,40 +1,37 @@
 import { NextFunction, Request, Response } from "express";
-import { loginSchema } from "@/validators/auth/loginValidator.ts";
-import { findUser } from "@/database/auth/findUser.ts";
+import { loginSchema } from "@/validators/auth/loginSchema.ts";
+import findUser from "@/database/auth/findUser.ts";
 import verifyPassword from "@/services/auth/verifyPassword.ts";
-import generateToken from "@/services/generateToken.ts";
-import setCookie from "@/services/setCookie.ts";
+import generateAuthTokenAndSetCookie from "@/services/generateAuthTokenAndSetCookie.ts";
+import validateInput from "@/validators/validateInput.ts";
 
-export const login = async (
+export default async function login(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> => {
+): Promise<void> {
   try {
     // JOI 驗證輸入資料
-    const { error: validateError } = loginSchema.validate(req.body);
-    if (validateError) throw validateError; // 丟出錯誤，讓錯誤中介軟體處理
+    validateInput(loginSchema, req);
 
-    // 前端傳來的資料
+    // 取得前端傳來的資料
     const { email, password } = req.body;
 
     // 💾 Prisma
-    const { user } = await findUser(email);
+    const user = await findUser(email);
 
-    // 使用抽象的密碼檢查函式
+    // 驗證密碼
     await verifyPassword(password, user?.password || "");
 
-    // 生成 token
-    const token = generateToken(user);
-    // 將 token 附加到 cookie
-    setCookie(res, token);
+    // 生成 token ＆ 設置 cookie
+    generateAuthTokenAndSetCookie(user, res);
 
     res.json({
       status: "success",
       userData: { username: user.username, email: user.email },
-      token,
+      message: "登入成功",
     });
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
   }
-};
+}

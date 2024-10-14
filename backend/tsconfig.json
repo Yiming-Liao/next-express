@@ -13,6 +13,6 @@
       "@/*": ["*"] // 使用 @ 作為別名
     }
   },
-  "include": ["src/**/*.ts", "@types/**/*.d.ts", "@types/models.ts", "src/services/setCookie.tsx"],
+  "include": ["src/**/*.ts"],
   "exclude": ["node_modules"]
 }

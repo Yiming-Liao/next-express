@@ -2,19 +2,20 @@
 
 import axios from "@/services/axios";
 import { FormEventHandler, useState } from "react";
+import { useSearchParams } from "next/navigation"; // 使用useSearchParams
 
-const RegisterPage = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
+const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const searchParams = useSearchParams();
+  const resetPasswordToken = searchParams.get("resetPasswordToken"); // 獲取 URL 中的 resetPasswordToken
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
-    const response = await axios.post("/api/auth/register", {
-      username,
-      email,
+    const response = await axios.post("/api/auth/reset-password", {
+      resetPasswordToken,
       password,
       confirmPassword,
     });
@@ -24,32 +25,10 @@ const RegisterPage = () => {
 
   return (
     <div className="flex flex-col items-center gap-16 p-16">
-      <h1 className="text-4xl">RegisterPage</h1>
+      <h1 className="text-4xl">ResetPasswordPage</h1>
 
       {/* form */}
       <form onSubmit={handleSubmit} className="w-96 flex flex-col gap-4 ">
-        {/* username */}
-        <div className="flex flex-col gap-1">
-          <label htmlFor="">Username</label>
-          <input
-            type="text"
-            className="border-2"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        {/* email */}
-        <div className="flex flex-col gap-1">
-          <label htmlFor="">email</label>
-          <input
-            type="email"
-            className="border-2"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
         {/* password */}
         <div className="flex flex-col gap-1">
           <label htmlFor="">password</label>
@@ -60,10 +39,9 @@ const RegisterPage = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
-
-        {/* confirm password */}
+        {/* confirmPassword */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="">confirm password</label>
+          <label htmlFor="">confirmPassword</label>
           <input
             type="password"
             className="border-2"
@@ -77,4 +55,4 @@ const RegisterPage = () => {
     </div>
   );
 };
-export default RegisterPage;
+export default ResetPasswordPage;

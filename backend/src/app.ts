@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
-import { serverConfig } from "@/config/app.ts";
+import { appConfig } from "@/config/appConfig.ts";
 import { router } from "@/routes/entry.ts";
 import errorMiddleware from "./middlewares/error/errorMiddleware.ts";
 import methodNotAllowedMiddleware from "./middlewares/error/methodNotAlowedMiddleware.ts";
@@ -32,6 +32,6 @@ app.use(methodNotAllowedMiddleware);
 // 註冊錯誤處理中介軟體
 app.use(errorMiddleware);
 
-app.listen(serverConfig.PORT, () => {
-  console.log(`[伺服器] 正在運行於 http://localhost:${serverConfig.PORT}`);
+app.listen(appConfig.PORT, () => {
+  console.log(`[伺服器] 正在運行於 http://localhost:${appConfig.PORT}`);
 });

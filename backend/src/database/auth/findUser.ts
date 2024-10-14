@@ -1,14 +1,17 @@
-import prisma from "@/services/prismaClient.ts";
+import HttpError from "@/HttpError.ts";
+import prisma from "@/database/prismaClient.ts";
 
-export const findUser = async (email: string) => {
+export default async function findUser(email: string) {
   // 搜尋一筆的使用者資料
   try {
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    return { user }; // ✔️ 返回使用者資料和 error 設為 null
-  } catch (error) {
-    throw error; // ✖️ 讓 middleware 捕獲
+    if (!user) throw new HttpError("沒有該筆 email 資料", 404);
+
+    return user; // ✔️ 返回使用者資料
+  } catch (err) {
+    throw err;
   }
-};
+}

@@ -1,14 +1,15 @@
 "use client";
 
-import axios from "@/services/axios";
+import { useLogout } from "@/hooks/useLogout";
 import { FormEventHandler } from "react";
 
 const LogoutPage = () => {
+  const { logout } = useLogout();
+
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
 
-    const response = await axios.post("/api/auth/logout");
-    if (response) console.log(response);
+    await logout();
   };
 
   return (
