@@ -16,7 +16,7 @@ class VerifyEmailController extends VerifyEmailControllerCore {
       // 驗證 verifyEmailToken
       const user = super.verifyJwtToken(req);
 
-      // 💾 Prisma 更新密碼
+      // 💾 Prisma
       const updatedUser = await super.markEmailAsVerified(user.email);
 
       // 刷新 authToken
@@ -41,11 +41,12 @@ class VerifyEmailController extends VerifyEmailControllerCore {
     try {
       const user = await super.findUser(req.user.email);
 
-      super.sendResetPasswordEmail(user.email);
+      await super.sendResetPasswordEmail(user.email);
+
       res.json({
         status: "success",
         userData: { username: user.username, email: user.email },
-        message: "信箱驗證成功",
+        message: "驗證信寄出成功",
       });
     } catch (err) {
       next(err);

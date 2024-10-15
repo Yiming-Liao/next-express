@@ -1,5 +1,5 @@
 // backend/core/src/controllers/auth/logoutController.ts
-import clearCookie from "#/services/clearCookie.ts";
+import CookieService from "#/services/CookieService.ts";
 import { Request, Response } from "express";
 
 /**
@@ -12,6 +12,6 @@ export default class LogoutController {
    * @param {Response} res - Express 回應物件
    */
   clearCookie(req: Request, res: Response): void {
-    clearCookie(req, res);
+    CookieService.clearCookie(req, res);
   }
 }

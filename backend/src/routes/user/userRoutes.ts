@@ -6,6 +6,6 @@ export const userRouter = Router();
 // 取得使用者資料
 userRouter
   .route("/")
-  .get(AuthMiddleware.handleAuth, (req: Request, res: Response) => {
+  .get(AuthMiddleware.verifiedUser, (req: Request, res: Response) => {
     res.json({ message: "你已通過信箱驗證～～～", user: req.user });
   });

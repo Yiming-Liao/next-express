@@ -1,10 +1,12 @@
 // backend/core/src/controllers/auth/LoginController.ts
 import { Request, Response } from "express";
 import { registerSchema } from "#/validators/auth/registerSchema.ts";
-import renewAuthTokenWithCookie from "#/services/renewAuthTokenWithCookie.ts";
 import validateInput from "#/validators/validateInput.ts";
-import UserService from "#/database/auth/UserService.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
 import sendVerificationEmail from "#/mails/auth/sendVerificationEmail.ts";
+import CookieService from "#/services/CookieService.ts";
+import { authConfig } from "!/config/authConfig.ts";
+import TokenService from "#/services/TokenService.ts";
 
 /**
  * 註冊控制器
@@ -25,7 +27,11 @@ export default class RegisterController {
    */
   protected async createUser(req: Request): Promise<any> {
     const { username, email, password } = req.body;
-    const createdUser = await UserService.createUser(username, email, password);
+    const createdUser = await UserDbHandler.createUser(
+      username,
+      email,
+      password
+    );
     return createdUser;
   }
 
@@ -48,6 +54,14 @@ export default class RegisterController {
     res: Response,
     user: any
   ): Promise<void> {
-    renewAuthTokenWithCookie(req, res, user);
+    CookieService.clearCookie(req, res);
+
+    const authToken = TokenService.generateJwtToken(
+      user.email,
+      authConfig.AUTH_SECRET,
+      "1d"
+    );
+
+    CookieService.setCookie(res, `${authConfig.AUTH_TOKEN_NAME}`, authToken);
   }
 }

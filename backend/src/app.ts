@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import helmet from "helmet";
-import { appConfig } from "@/config/appConfig.ts";
+import { appConfig } from "!/config/appConfig.ts";
 import { router } from "@/routes/entry.ts";
 import expressListEndpoints from "express-list-endpoints";
 import MethodNotAllowedMiddleware from "#/middlewares/error/MethodNotAllowedMiddleware.ts";

@@ -1,12 +1,12 @@
 // backend/core/src/controllers/auth/VerifyEmailController.ts
 import { Request, Response } from "express";
 import validateInput from "#/validators/validateInput.ts";
-import renewAuthTokenWithCookie from "#/services/renewAuthTokenWithCookie.ts";
 import TokenService from "#/services/TokenService.ts";
-import UserService from "#/database/auth/UserService.ts";
-import { authConfig } from "#/config/authConfig.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
+import { authConfig } from "!/config/authConfig.ts";
 import { verifyEmailSchema } from "#/validators/auth/verifyEmailSchema.ts";
 import sendVerificationEmail from "#/mails/auth/sendVerificationEmail.ts";
+import CookieService from "#/services/CookieService.ts";
 
 /**
  * 信箱驗證控制器
@@ -40,7 +40,7 @@ export default class VerifyEmailController {
    * @returns {Promise<any>} - 返回用戶資料
    */
   protected async markEmailAsVerified(email: string): Promise<any> {
-    const updatedUser = await UserService.markEmailAsVerified(email);
+    const updatedUser = await UserDbHandler.markEmailAsVerified(email);
     return updatedUser;
   }
 
@@ -55,16 +55,25 @@ export default class VerifyEmailController {
     res: Response,
     user: any
   ): Promise<void> {
-    renewAuthTokenWithCookie(req, res, user);
+    CookieService.clearCookie(req, res);
+
+    const authToken = TokenService.generateJwtToken(
+      user.email,
+      authConfig.AUTH_SECRET,
+      "1d"
+    );
+
+    CookieService.setCookie(res, `${authConfig.AUTH_TOKEN_NAME}`, authToken);
   }
 
+  /*** 再次發送驗證信 ***/
   /**
    * 查找用戶
    * @param {string} email - 使用者的 Email
    * @returns {Promise<any>} - 返回用戶資料
    */
   protected async findUser(email: string): Promise<any> {
-    const user = await UserService.findUser(email);
+    const user = await UserDbHandler.findUser(email);
     return user;
   }
 

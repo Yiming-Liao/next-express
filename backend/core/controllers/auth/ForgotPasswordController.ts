@@ -1,9 +1,9 @@
 // backend/core/src/controllers/auth/ForgotPasswordController.ts
 import { Request } from "express";
-import { forgotPasswordSchema } from "#/validators/auth/forgotPasswordSchema.ts";
-import sendResetPasswordEmail from "#/mails/auth/sendResetPasswordEmail.ts";
 import validateInput from "#/validators/validateInput.ts";
-import UserService from "#/database/auth/UserService.ts";
+import { forgotPasswordSchema } from "#/validators/auth/forgotPasswordSchema.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
+import sendResetPasswordEmail from "#/mails/auth/sendResetPasswordEmail.ts";
 
 /**
  * 忘記密碼控制器
@@ -24,7 +24,7 @@ export default class ForgotPasswordController {
    */
   protected async findUser(req: Request): Promise<any> {
     const { email } = req.body;
-    const user = await UserService.findUser(email);
+    const user = await UserDbHandler.findUser(email);
     return user;
   }
 

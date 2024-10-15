@@ -1,8 +1,8 @@
 // backend/core/src/controllers/auth/ChangePasswordController.ts
 import { Request } from "express";
-import { changePasswordSchema } from "#/validators/auth/changePasswordSchema.ts";
 import validateInput from "#/validators/validateInput.ts";
-import UserService from "#/database/auth/UserService.ts";
+import { changePasswordSchema } from "#/validators/auth/changePasswordSchema.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
 import verifyPassword from "#/services/auth/verifyPassword.ts";
 
 /**
@@ -23,7 +23,7 @@ export default class ChangePasswordController {
    * @returns {Promise<any>} - 返回用戶資料
    */
   protected async findUser(email: string): Promise<any> {
-    const user = await UserService.findUser(email);
+    const user = await UserDbHandler.findUser(email);
     return user;
   }
 
@@ -49,7 +49,7 @@ export default class ChangePasswordController {
     email: string,
     password: string
   ): Promise<any> {
-    const updatedUser = await UserService.updateUserPassword(email, password);
+    const updatedUser = await UserDbHandler.updateUserPassword(email, password);
     return updatedUser;
   }
 }

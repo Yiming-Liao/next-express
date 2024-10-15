@@ -1,10 +1,12 @@
 // backend/core/src/controllers/auth/LoginController.ts
 import { Request, Response } from "express";
-import { loginSchema } from "#/validators/auth/loginSchema.ts";
-import verifyPassword from "#/services/auth/verifyPassword.ts";
-import renewAuthTokenWithCookie from "#/services/renewAuthTokenWithCookie.ts";
 import validateInput from "#/validators/validateInput.ts";
-import UserService from "#/database/auth/UserService.ts";
+import { loginSchema } from "#/validators/auth/loginSchema.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
+import verifyPassword from "#/services/auth/verifyPassword.ts";
+import CookieService from "#/services/CookieService.ts";
+import TokenService from "#/services/TokenService.ts";
+import { authConfig } from "!/config/authConfig.ts";
 
 /**
  * 登入控制器
@@ -25,7 +27,7 @@ export default class LoginController {
    */
   protected async findUser(req: Request): Promise<any> {
     const { email } = req.body;
-    const user = await UserService.findUser(email);
+    const user = await UserDbHandler.findUser(email);
     return user;
   }
 
@@ -43,7 +45,7 @@ export default class LoginController {
   }
 
   /**
-   * 刷新 auth token 並設置至 cookie
+   * 刷新 authToken 並設置至 cookie
    * @param {any} user - 用戶資料
    * @param {Request} req - Express 請求物件
    * @param {Response} res - Express 回應物件
@@ -53,6 +55,14 @@ export default class LoginController {
     res: Response,
     user: any
   ): Promise<void> {
-    renewAuthTokenWithCookie(req, res, user);
+    CookieService.clearCookie(req, res);
+
+    const authToken = TokenService.generateJwtToken(
+      user.email,
+      authConfig.AUTH_SECRET,
+      "1d"
+    );
+
+    CookieService.setCookie(res, `${authConfig.AUTH_TOKEN_NAME}`, authToken);
   }
 }

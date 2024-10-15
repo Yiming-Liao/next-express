@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
-import prisma from "@/database/prismaClient.ts";
+import prisma from "!/prisma/prismaClient.ts";
 import HttpError from "#/HttpError.ts";
 
-export default class UserService {
+export default class UserDbHandler {
   /**
    * 創建新的使用者
    * @param {string} username 使用者名稱
@@ -28,9 +28,9 @@ export default class UserService {
    * @returns 返回使用者資料
    */
   static async findUser(email: string) {
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) throw new HttpError("沒有該筆 email 資料", 404);
-    return user; // ✔️ 返回使用者資料
+    const foundUser = await prisma.user.findUnique({ where: { email } });
+    if (!foundUser) throw new HttpError("沒有該筆 email 資料", 404);
+    return foundUser; // ✔️ 返回使用者資料
   }
 
   /**

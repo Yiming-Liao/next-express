@@ -1,14 +1,19 @@
 import nodemailer from "nodemailer";
-import { appConfig } from "@/config/appConfig.ts";
-import { mailConfig } from "@/config/mailConfig.ts";
+import { appConfig } from "!/config/appConfig.ts";
+import { mailConfig } from "!/config/mailConfig.ts";
 import HttpError from "@/HttpError.ts";
-import generateVerifyToken from "@/services/generateVerifyToken.ts";
+import TokenService from "#/services/TokenService.ts";
+import { authConfig } from "!/config/authConfig.ts";
 
 export default async function sendVerificationEmail(
   email: string
 ): Promise<void> {
-  // 生成 驗證 token
-  const verifyEmailToken = generateVerifyToken("verifyEmail", email);
+  // 生成 verifyEmailToken
+  const verifyEmailToken = TokenService.generateJwtToken(
+    email,
+    authConfig.EMAIL_VERIFICATION_SECRET,
+    "1d"
+  );
 
   // 驗證連結
   const verificationLink = `${appConfig.FRONTEND_URL}/verify-email?verifyEmailToken=${verifyEmailToken}`;
@@ -33,6 +38,6 @@ export default async function sendVerificationEmail(
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
-    throw new HttpError(`寄送驗證信失敗: ${err}`, 500);
+    throw new HttpError(`[信箱驗證信 寄送錯誤] ${err.message}`, 500);
   }
 }

@@ -2,10 +2,10 @@
 import { Request, Response } from "express";
 import { resetPasswordSchema } from "#/validators/auth/resetPasswordSchema.ts";
 import validateInput from "#/validators/validateInput.ts";
-import UserService from "#/database/auth/UserService.ts";
-import renewAuthTokenWithCookie from "#/services/renewAuthTokenWithCookie.ts";
-import { authConfig } from "#/config/authConfig.ts";
+import UserDbHandler from "#/database/UserDbHandler.ts";
+import { authConfig } from "!/config/authConfig.ts";
 import TokenService from "#/services/TokenService.ts";
+import CookieService from "#/services/CookieService.ts";
 
 /**
  * 重設密碼控制器
@@ -44,7 +44,7 @@ export default class ResetPasswordController {
     email: string
   ): Promise<any> {
     const { password } = req.body;
-    const updatedUser = await UserService.updateUserPassword(email, password);
+    const updatedUser = await UserDbHandler.updateUserPassword(email, password);
     return updatedUser;
   }
 
@@ -59,6 +59,14 @@ export default class ResetPasswordController {
     res: Response,
     user: any
   ): Promise<void> {
-    renewAuthTokenWithCookie(req, res, user);
+    CookieService.clearCookie(req, res);
+
+    const authToken = TokenService.generateJwtToken(
+      user.email,
+      authConfig.AUTH_SECRET,
+      "1d"
+    );
+
+    CookieService.setCookie(res, `${authConfig.AUTH_TOKEN_NAME}`, authToken);
   }
 }

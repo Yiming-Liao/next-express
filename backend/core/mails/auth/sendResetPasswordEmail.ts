@@ -1,16 +1,18 @@
 import nodemailer from "nodemailer";
-import { appConfig } from "@/config/appConfig.ts";
-import { mailConfig } from "@/config/mailConfig.ts";
+import { appConfig } from "!/config/appConfig.ts";
+import { mailConfig } from "!/config/mailConfig.ts";
 import HttpError from "@/HttpError.ts";
-import TokenService, { TokenType } from "#/services/TokenService.ts"; // 確保匯入 TokenType
+import TokenService from "#/services/TokenService.ts"; // 確保匯入 TokenType
+import { authConfig } from "!/config/authConfig.ts";
 
 export default async function sendResetPasswordEmail(
   email: string
 ): Promise<void> {
-  // 生成 驗證 token
-  const resetPasswordToken = TokenService.generateVerifyToken(
-    TokenType.RESET_PASSWORD,
-    email
+  // 生成 resetPasswordToken
+  const resetPasswordToken = TokenService.generateJwtToken(
+    email,
+    authConfig.RESET_PASSWORD_SECRET,
+    "1h"
   );
 
   // 重設連結
@@ -36,6 +38,6 @@ export default async function sendResetPasswordEmail(
   try {
     await transporter.sendMail(mailOptions);
   } catch (err) {
-    throw new HttpError("寄送驗證信失敗: ", 500);
+    throw new HttpError(`[密碼重設驗證信 寄送錯誤] ${err.message}`, 500);
   }
 }
