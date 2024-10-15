@@ -10,9 +10,14 @@
     "declaration": true,
     "baseUrl": "./src", // 設置基本路徑
     "paths": {
-      "@/*": ["*"] // 使用 @ 作為別名
+      "@/*": ["*"], // 使用 @ 作為別名
+      "#/*": ["../core/*"] // 使用 # 作為 core 的別名
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "core/**/*.ts",
+    "Functions/forgotPasswordController.ts"
+  ], // 確保 include 了 core 目錄
   "exclude": ["node_modules"]
 }

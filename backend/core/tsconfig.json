@@ -1,0 +1,5 @@
+{
+  "extends": "../tsconfig.json", // 繼承主 tsconfig
+  "include": ["**/*.ts"], // 包括 core 資料夾中的所有 ts 文件
+  "exclude": ["node_modules"]
+}

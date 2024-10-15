@@ -1,18 +1,15 @@
 "use client";
 
+import { useForgotPassword } from "@/hooks/useForgotPassword";
 import { FormEventHandler, useState } from "react";
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
+  const { forgotPassword } = useForgotPassword();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-
-    // const response = await axios.post("/api/auth/forgot-password", {
-    //   email,
-    // });
-
-    // console.log(response);
+    await forgotPassword(email);
   };
 
   return (

@@ -32,7 +32,9 @@ export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   // 使用 useEffect 來從 localStorage 加載用戶資料
   useEffect(() => {
     const storedUser = localStorage.getItem(appConfig.APP_NAME);
-    setUser(storedUser ? JSON.parse(storedUser) : null);
+    setUser(
+      storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null
+    );
   }, []); // 只在組件掛載時執行一次
 
   return (

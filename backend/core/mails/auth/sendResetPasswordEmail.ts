@@ -2,16 +2,19 @@ import nodemailer from "nodemailer";
 import { appConfig } from "@/config/appConfig.ts";
 import { mailConfig } from "@/config/mailConfig.ts";
 import HttpError from "@/HttpError.ts";
-import generateVerifyToken from "@/services/generateVerifyToken.ts";
+import TokenService, { TokenType } from "#/services/TokenService.ts"; // 確保匯入 TokenType
 
-export default async function sendVerificationEmail(
+export default async function sendResetPasswordEmail(
   email: string
 ): Promise<void> {
   // 生成 驗證 token
-  const token = generateVerifyToken("verifyEmail", email);
+  const resetPasswordToken = TokenService.generateVerifyToken(
+    TokenType.RESET_PASSWORD,
+    email
+  );
 
-  // 驗證連結
-  const verificationLink = `${appConfig.BACKEND_URL}/api/auth/verify-email?token=${token}`;
+  // 重設連結
+  const resetPasswordLink = `${appConfig.FRONTEND_URL}/reset-password?resetPasswordToken=${resetPasswordToken}`;
 
   // 設定
   const transporter = nodemailer.createTransport({
@@ -26,8 +29,8 @@ export default async function sendVerificationEmail(
   const mailOptions = {
     from: mailConfig.MAIL_USERNAME,
     to: email,
-    subject: "請驗證您的電子郵件",
-    html: `<p>請點擊以下連結驗證您的電子郵件：</p><a href="${verificationLink}">${verificationLink}</a>`,
+    subject: "請請重設您的密碼",
+    html: `<p>請點擊以下連結重設您的密碼：</p><a href="${resetPasswordLink}">${resetPasswordLink}</a>`,
   };
 
   try {

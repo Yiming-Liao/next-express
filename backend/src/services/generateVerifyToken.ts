@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { authConfig } from "@/config/authConfig.ts";
 
+// @sendResetPasswordEmail @sendVerificationEmail
 export default function generateVerifyToken(usage: string, email: string) {
   const secert =
     usage === "verifyEmail"

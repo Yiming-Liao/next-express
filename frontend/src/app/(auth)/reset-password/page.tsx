@@ -1,26 +1,20 @@
 "use client";
 
-import axios from "@/services/axios";
 import { FormEventHandler, useState } from "react";
 import { useSearchParams } from "next/navigation"; // 使用useSearchParams
+import { useResetPassword } from "@/hooks/useResetPassword";
 
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { resetPassword } = useResetPassword();
 
   const searchParams = useSearchParams();
   const resetPasswordToken = searchParams.get("resetPasswordToken"); // 獲取 URL 中的 resetPasswordToken
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-
-    const response = await axios.post("/api/auth/reset-password", {
-      resetPasswordToken,
-      password,
-      confirmPassword,
-    });
-
-    console.log(response);
+    await resetPassword(resetPasswordToken, password, confirmPassword);
   };
 
   return (

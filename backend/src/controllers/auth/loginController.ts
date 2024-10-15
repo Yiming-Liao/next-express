@@ -1,37 +1,30 @@
+import LoginControllerCore from "#/controllers/auth/LoginController.ts";
 import { NextFunction, Request, Response } from "express";
-import { loginSchema } from "@/validators/auth/loginSchema.ts";
-import findUser from "@/database/auth/findUser.ts";
-import verifyPassword from "@/services/auth/verifyPassword.ts";
-import generateAuthTokenAndSetCookie from "@/services/generateAuthTokenAndSetCookie.ts";
-import validateInput from "@/validators/validateInput.ts";
 
-export default async function login(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  try {
-    // JOI 驗證輸入資料
-    validateInput(loginSchema, req);
+class LoginController extends LoginControllerCore {
+  async login(req: Request, res: Response, next: NextFunction) {
+    try {
+      // 驗證資料
+      super.validate(req);
 
-    // 取得前端傳來的資料
-    const { email, password } = req.body;
+      // 💾 Prisma
+      const user = await super.findUser(req);
 
-    // 💾 Prisma
-    const user = await findUser(email);
+      // 驗證密碼
+      await super.verifyPassword(req, user.password);
 
-    // 驗證密碼
-    await verifyPassword(password, user?.password || "");
+      // 刷新 authToken
+      await super.renewAuthTokenWithCookie(req, res, user);
 
-    // 生成 token ＆ 設置 cookie
-    generateAuthTokenAndSetCookie(user, res);
-
-    res.json({
-      status: "success",
-      userData: { username: user.username, email: user.email },
-      message: "登入成功",
-    });
-  } catch (err) {
-    next(err);
+      res.json({
+        status: "success",
+        userData: { username: user.username, email: user.email },
+        message: "登入成功",
+      });
+    } catch (err) {
+      next(err);
+    }
   }
 }
+
+export default new LoginController();

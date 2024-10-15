@@ -1,5 +1,6 @@
 "use client";
 
+import { useRegister } from "@/hooks/useRegister";
 import { FormEventHandler, useState } from "react";
 
 const RegisterPage = () => {
@@ -7,18 +8,11 @@ const RegisterPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { register } = useRegister();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-
-    // const response = await axios.post("/api/auth/register", {
-    //   username,
-    //   email,
-    //   password,
-    //   confirmPassword,
-    // });
-
-    // console.log(response);
+    await register(username, email, password, confirmPassword);
   };
 
   return (

@@ -4,9 +4,9 @@ import cors from "cors";
 import helmet from "helmet";
 import { appConfig } from "@/config/appConfig.ts";
 import { router } from "@/routes/entry.ts";
-import errorMiddleware from "./middlewares/error/errorMiddleware.ts";
-import methodNotAllowedMiddleware from "./middlewares/error/methodNotAlowedMiddleware.ts";
 import expressListEndpoints from "express-list-endpoints";
+import MethodNotAllowedMiddleware from "#/middlewares/error/MethodNotAllowedMiddleware.ts";
+import ErrorMiddleware from "#/middlewares/error/ErrorMiddleware.ts";
 
 const app = express();
 
@@ -20,17 +20,17 @@ app.use(
   })
 );
 
-app.use(router); // 路由進入口
+app.use("/api/v1", router); // 路由進入口 /api/v1
 
 // console 所有路由
 const endpoints = expressListEndpoints(app);
 console.log(endpoints);
 
-// 捕獲不支持的方法
-app.use(methodNotAllowedMiddleware);
+// 不支持的方法 Middleware
+app.use(MethodNotAllowedMiddleware.handleErrors);
 
-// 註冊錯誤處理中介軟體
-app.use(errorMiddleware);
+// 錯誤處理 Middleware
+app.use(ErrorMiddleware.handleErrors);
 
 app.listen(appConfig.PORT, () => {
   console.log(`[伺服器] 正在運行於 http://localhost:${appConfig.PORT}`);

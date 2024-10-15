@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { Response } from "express";
 import { authConfig } from "@/config/authConfig.ts";
 
+// @register @login @resetPassword @verifyEmail
 export default function generateAuthTokenAndSetCookie(
   user: {
     email: string;
@@ -22,7 +23,7 @@ export default function generateAuthTokenAndSetCookie(
   );
 
   // 設置 cookie
-  res.cookie(`${authConfig.JWT_TOKEN_NAME}`, authToken, {
+  res.cookie(`${authConfig.AUTH_TOKEN_NAME}`, authToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     expires: new Date(Date.now() + 3600000), // 1 小時

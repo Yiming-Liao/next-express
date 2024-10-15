@@ -1,11 +1,9 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { authRouter } from "@/routes/auth/authRoutes.ts";
-import HelloController from "@/controllers/HelloController.ts";
+import { userRouter } from "@/routes/user/userRoutes.ts";
 
 export const router = Router();
 
-router.use("/api/auth", authRouter); // 將路由掛載在 /api/auth
+router.use("/auth", authRouter); // 將路由掛載在 /api/v1/auth
 
-router
-  .route("/")
-  .get((req: Request, res: Response) => HelloController.hello(req, res));
+router.use("/user", userRouter); // 將路由掛載在 /api/v1/user

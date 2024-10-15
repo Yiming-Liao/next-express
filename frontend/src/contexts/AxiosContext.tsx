@@ -2,7 +2,7 @@
 
 import { useToast } from "@/contexts/ToastContext";
 import { createContext, useContext, ReactNode } from "react";
-import Axios, { AxiosInstance } from "axios";
+import Axios, { AxiosInstance, AxiosResponse, isAxiosError } from "axios";
 
 // 創建 Axios 上下文
 const AxiosContext = createContext<AxiosInstance | undefined>(undefined);
@@ -13,28 +13,28 @@ export const AxiosProvider: React.FC<{ children: ReactNode }> = ({
   const { toast } = useToast(); // 在這裡使用 useToast
 
   const axios: AxiosInstance = Axios.create({
-    baseURL: process.env.NEXT_PUBLIC_BACKEND_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     withCredentials: true,
   });
 
   // 回應攔截器
   axios.interceptors.response.use(
-    (response) => {
-      // 使用 toast 顯示成功訊息
-      toast({ type: "success", message: response.data.message });
+    (response: AxiosResponse) => {
+      toast({ type: "success", message: response.data.message }); // 使用 toast 顯示成功訊息
       return response;
     },
-    (error) => {
-      const { response } = error;
+    (error: unknown) => {
+      if (isAxiosError(error)) {
+        const { response } = error;
 
-      if (response) {
-        // 使用 toast 顯示錯誤訊息
-        toast({ type: "error", message: response.data.message });
+        if (response) {
+          toast({ type: "error", message: response.data.message }); // 使用 toast 顯示錯誤訊息
+        } else {
+          toast({ type: "error", message: "網絡錯誤或請求未到達伺服器" }); // 使用 toast 顯示錯誤訊息
+        }
       } else {
-        toast({ type: "error", message: "網絡錯誤或請求未到達伺服器" });
+        console.warn("發生未知錯誤: ", error);
       }
-
-      return Promise.reject(error); // 返回錯誤
     }
   );
 

@@ -1,38 +1,56 @@
-import { authConfig } from "@/config/authConfig.ts";
-import markEmailAsVerified from "@/database/auth/markEmailAsVerified.ts";
-import HttpError from "@/HttpError.ts";
-import generateAuthTokenAndSetCookie from "@/services/generateAuthTokenAndSetCookie.ts";
-import verifyJwtToken from "@/services/verifyJwtToken.ts";
+import VerifyEmailControllerCore from "#/controllers/auth/VerifyEmailController.ts";
 import { NextFunction, Request, Response } from "express";
+import { JwtPayload } from "jsonwebtoken";
 
-export default async function verifyEmail(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
-  try {
-    const { token } = req.query;
+// 定義自定義的 Request 類型
+interface CustomRequest extends Request {
+  user: JwtPayload; // 或者是您的用戶類型
+}
 
-    // 確認 token 存在
-    if (!token || typeof token !== "string") {
-      throw new HttpError("無效的驗證請求，缺少 token", 400);
+class VerifyEmailController extends VerifyEmailControllerCore {
+  async verifyEmail(req: Request, res: Response, next: NextFunction) {
+    try {
+      // 驗證資料
+      super.validate(req);
+
+      // 驗證 verifyEmailToken
+      const user = super.verifyJwtToken(req);
+
+      // 💾 Prisma 更新密碼
+      const updatedUser = await super.markEmailAsVerified(user.email);
+
+      // 刷新 authToken
+      await super.renewAuthTokenWithCookie(req, res, updatedUser);
+
+      res.json({
+        status: "success",
+        userData: { username: user.username, email: user.email },
+        message: "信箱驗證成功",
+      });
+    } catch (err) {
+      next(err);
     }
-    const user = verifyJwtToken(token, authConfig.EMAIL_VERIFICATION_SECRET);
+  }
 
-    // 💾 Prisma
-    const updatedUser = await markEmailAsVerified(user.email);
+  // 再次寄送驗證信
+  async resendVerificationEmail(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = await super.findUser(req.user.email);
 
-    // 清除舊的 cookie
-    res.clearCookie(`${authConfig.JWT_TOKEN_NAME}`);
-
-    // 生成 token 和設置 cookie
-    generateAuthTokenAndSetCookie(updatedUser, res);
-
-    res.status(200).json({
-      status: "success",
-      message: "Email 驗證成功。",
-    });
-  } catch (err) {
-    next(err);
+      super.sendResetPasswordEmail(user.email);
+      res.json({
+        status: "success",
+        userData: { username: user.username, email: user.email },
+        message: "信箱驗證成功",
+      });
+    } catch (err) {
+      next(err);
+    }
   }
 }
+
+export default new VerifyEmailController();

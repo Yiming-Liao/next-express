@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import HttpError from "@/HttpError.ts";
 
+// @changePassword @resetPassword @verifyEmail @authMiddleware
 export default function verifyJwtToken(token: string, secret: string) {
   try {
     // 解碼 token 並取得 user 資料

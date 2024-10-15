@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useAxios } from "@/contexts/AxiosContext"; // 使用 useAxios
-import { AxiosError } from "axios";
 import { appConfig } from "@/config/appConfig";
 
 export const useLogin = () => {
@@ -8,12 +7,12 @@ export const useLogin = () => {
   const { setUser } = useAuth();
 
   const login = async (email: string, password: string) => {
-    try {
-      const response = await axios.post("/api/auth/login", {
-        email,
-        password,
-      });
+    const response = await axios.post("/auth/login", {
+      email,
+      password,
+    });
 
+    if (response) {
       const userData = response.data.userData;
 
       // 設置 context 用戶狀態
@@ -21,12 +20,6 @@ export const useLogin = () => {
 
       // 設置 localStorage
       localStorage.setItem(appConfig.APP_NAME, JSON.stringify(userData));
-
-      //錯誤處理
-    } catch (err: unknown) {
-      if (!(err instanceof AxiosError)) {
-        console.warn("發生未知錯誤: ", err);
-      }
     }
   };
 

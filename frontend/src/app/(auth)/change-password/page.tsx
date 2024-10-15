@@ -1,20 +1,17 @@
 "use client";
 
+import { useChangePassword } from "@/hooks/useChangePassword";
 import { FormEventHandler, useState } from "react";
 
 const ChangePasswordPage = () => {
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const { changePassword } = useChangePassword();
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
-
-    // const response = await axios.post("/api/auth/change-password", {
-    //   oldPassword,
-    //   password,
-    //   confirmPassword,
-    // });
+    await changePassword(oldPassword, password, confirmPassword);
   };
 
   return (
