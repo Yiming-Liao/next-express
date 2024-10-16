@@ -9,3 +9,7 @@ userRouter
   .get(AuthMiddleware.verifiedUser, (req: Request, res: Response) => {
     res.json({ message: "你已通過信箱驗證～～～", user: req.user });
   });
+
+userRouter.route("/1").get((req: Request, res: Response) => {
+  res.json({ message: "你已通過信箱驗證～～～", user: req.user });
+});

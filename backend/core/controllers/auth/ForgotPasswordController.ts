@@ -24,15 +24,15 @@ export default class ForgotPasswordController {
    */
   protected async findUser(req: Request): Promise<any> {
     const { email } = req.body;
-    const user = await UserDbHandler.findUser(email);
-    return user;
+    const foundUser = await UserDbHandler.findUser(email);
+    return foundUser;
   }
 
   /**
    * 發送重置密碼的郵件
-   * @param {string} email - 使用者電子郵件
+   * @param {any} user - 用戶資料
    */
-  protected async sendResetPasswordEmail(email: string): Promise<void> {
-    await sendResetPasswordEmail(email);
+  protected async sendResetPasswordEmail(user: any): Promise<void> {
+    await sendResetPasswordEmail(user);
   }
 }

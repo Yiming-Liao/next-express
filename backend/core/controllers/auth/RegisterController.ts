@@ -37,10 +37,10 @@ export default class RegisterController {
 
   /**
    * 發送信箱驗證郵件
-   * @param {string} email - 使用者電子郵件
+   * @param {any} user - 使用者
    */
-  protected async sendResetPasswordEmail(email: string): Promise<void> {
-    await sendVerificationEmail(email);
+  protected async sendResetPasswordEmail(user: string): Promise<void> {
+    await sendVerificationEmail(user);
   }
 
   /**
@@ -57,7 +57,7 @@ export default class RegisterController {
     CookieService.clearCookie(req, res);
 
     const authToken = TokenService.generateJwtToken(
-      user.email,
+      user,
       authConfig.AUTH_SECRET,
       "1d"
     );

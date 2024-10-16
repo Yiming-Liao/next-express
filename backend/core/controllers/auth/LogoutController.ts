@@ -12,6 +12,7 @@ export default class LogoutController {
    * @param {Response} res - Express 回應物件
    */
   clearCookie(req: Request, res: Response): void {
+    console.log(req);
     CookieService.clearCookie(req, res);
   }
 }

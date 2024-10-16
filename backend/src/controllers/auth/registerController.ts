@@ -11,7 +11,7 @@ class RegisterController extends RegisterControllerCore {
       const user = await super.createUser(req);
 
       // 寄送驗證信
-      await super.sendResetPasswordEmail(user.email);
+      await super.sendResetPasswordEmail(user);
 
       // 刷新 authToken
       await super.renewAuthTokenWithCookie(req, res, user);

@@ -49,7 +49,7 @@ export default class ResetPasswordController {
   }
 
   /**
-   * 刷新 auth token 並設置至 cookie
+   * 刷新 auth token 並設置至 cookie // 只有 1hr
    * @param {any} user - 用戶資料
    * @param {Request} req - Express 請求物件
    * @param {Response} res - Express 回應物件
@@ -62,9 +62,9 @@ export default class ResetPasswordController {
     CookieService.clearCookie(req, res);
 
     const authToken = TokenService.generateJwtToken(
-      user.email,
+      user,
       authConfig.AUTH_SECRET,
-      "1d"
+      "1h"
     );
 
     CookieService.setCookie(res, `${authConfig.AUTH_TOKEN_NAME}`, authToken);

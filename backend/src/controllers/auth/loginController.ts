@@ -1,5 +1,5 @@
-import LoginControllerCore from "#/controllers/auth/LoginController.ts";
 import { NextFunction, Request, Response } from "express";
+import LoginControllerCore from "#/controllers/auth/LoginController.ts";
 
 class LoginController extends LoginControllerCore {
   async login(req: Request, res: Response, next: NextFunction) {

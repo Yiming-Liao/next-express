@@ -5,12 +5,10 @@ import HttpError from "@/HttpError.ts";
 import TokenService from "#/services/TokenService.ts"; // 確保匯入 TokenType
 import { authConfig } from "!/config/authConfig.ts";
 
-export default async function sendResetPasswordEmail(
-  email: string
-): Promise<void> {
+export default async function sendResetPasswordEmail(user: any): Promise<void> {
   // 生成 resetPasswordToken
   const resetPasswordToken = TokenService.generateJwtToken(
-    email,
+    user,
     authConfig.RESET_PASSWORD_SECRET,
     "1h"
   );
@@ -30,7 +28,7 @@ export default async function sendResetPasswordEmail(
   // 撰寫 email
   const mailOptions = {
     from: mailConfig.MAIL_USERNAME,
-    to: email,
+    to: user.email,
     subject: "請請重設您的密碼",
     html: `<p>請點擊以下連結重設您的密碼：</p><a href="${resetPasswordLink}">${resetPasswordLink}</a>`,
   };

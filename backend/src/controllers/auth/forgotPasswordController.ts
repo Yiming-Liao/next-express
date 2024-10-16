@@ -11,7 +11,7 @@ class ForgotPasswordController extends ForgotPasswordControllerCore {
       const user = await super.findUser(req);
 
       // 驗證密碼
-      await super.sendResetPasswordEmail(user.email);
+      await super.sendResetPasswordEmail(user);
 
       res.status(200).json({
         status: "success",

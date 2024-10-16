@@ -4,18 +4,21 @@ import TokenPayload from "#/types/services/TokenServiceType.ts";
 
 export default class TokenService {
   /**
-   * 生成信箱驗證或重設密碼 token
-   * @param {string} email - 用戶的 email
+   * 生成信箱 JWT token
+   * @param {string} user - 用戶
    * @param {string} secret - 加密 Secret
    * @param {string} expiresIn - 過期時間
    * @returns {string} - 返回生成的 token
    */
   static generateJwtToken(
-    email: string,
+    user: any,
     secret: string,
     expiresIn: string
   ): string {
-    return jwt.sign({ email }, secret, { expiresIn: expiresIn });
+    const { username, email, isEmailVerified } = user;
+    return jwt.sign({ username, email, isEmailVerified }, secret, {
+      expiresIn: expiresIn,
+    });
   }
 
   /**

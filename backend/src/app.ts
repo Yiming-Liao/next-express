@@ -1,24 +1,14 @@
 import express from "express";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import helmet from "helmet";
 import { appConfig } from "!/config/appConfig.ts";
 import { router } from "@/routes/entry.ts";
-import expressListEndpoints from "express-list-endpoints";
 import MethodNotAllowedMiddleware from "#/middlewares/error/MethodNotAllowedMiddleware.ts";
 import ErrorMiddleware from "#/middlewares/error/ErrorMiddleware.ts";
+import appMiddleware from "./appMiddleware.ts";
+import expressListEndpoints from "express-list-endpoints";
 
 const app = express();
 
-app.use(helmet());
-app.use(express.json());
-app.use(cookieParser());
-app.use(
-  cors({
-    origin: "http://localhost:3000", // 只允許此來源
-    credentials: true, // 允許 cookie 傳遞
-  })
-);
+appMiddleware(app);
 
 app.use("/api/v1", router); // 路由進入口 /api/v1
 

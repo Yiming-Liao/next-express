@@ -58,7 +58,7 @@ export default class LoginController {
     CookieService.clearCookie(req, res);
 
     const authToken = TokenService.generateJwtToken(
-      user.email,
+      user,
       authConfig.AUTH_SECRET,
       "1d"
     );

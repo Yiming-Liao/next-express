@@ -9,15 +9,21 @@ export default class ErrorMiddleware {
     res: Response,
     next: NextFunction
   ): void {
-    console.warn(
-      "\x1b[36m%s\x1b[0m",
-      "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-    );
-    console.error("Error Middleware 捕獲到錯誤: ", err); // 記錄錯誤到控制台
-    console.warn(
-      "\x1b[36m%s\x1b[0m",
-      "|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
-    );
+    // 只在開發環境顯示詳細的錯誤堆疊
+    if (process.env.NODE_ENV !== "production" && err.stack) {
+      console.warn(
+        "\x1b[36m%s\x1b[0m",
+        "========================================================================"
+      );
+      // 限制只顯示前幾層堆疊
+      const stackLines = err.stack.split("\n");
+      const limitedStack = stackLines.slice(0, 4).join("\n");
+      console.info(limitedStack);
+      console.warn(
+        "\x1b[36m%s\x1b[0m",
+        "========================================================================"
+      );
+    }
 
     // JOI 資料輸入錯誤
     if (err.isJoi) {
@@ -39,11 +45,10 @@ export default class ErrorMiddleware {
       return;
     }
 
-    // 捕獲所有錯誤並回傳 // 若沒有 客製化錯誤 則回傳 500 伺服器錯誤
+    // 捕獲所有錯誤並回傳
     res.status(err.statusCode || 500).json({
       status: "error",
-      message: err.message || "伺服器錯誤",
+      message: "發生錯誤，請稍後再試！", // 使用通用自訂錯誤訊息
     });
-    return;
   }
 }
